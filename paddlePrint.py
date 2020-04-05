@@ -1,6 +1,8 @@
 """
+!wget https://raw.githubusercontent.com/nemon-/tools4paddle/master/paddlePrint.py
 form paddlePrint import pprint
 pprint('abc')
+
 pprint('log begin',file_name='/home/aistudio/_log.txt')
 pprint('123')
 pprint('def',end='-----')
