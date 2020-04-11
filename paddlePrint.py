@@ -1,42 +1,58 @@
 """
 !wget https://raw.githubusercontent.com/nemon-/tools4paddle/master/paddlePrint.py
-from paddlePrint import pprint
-pprint('abc')
+from paddlePrint import print,showlog
+# or
+import paddlePrint as pt
+print=pt.pprint
 
-pprint('log begin',file_name='/home/aistudio/_log.txt')
-pprint('123')
-pprint('def',end='-----')
-pprint('ghi')
-pprint('x=%f'%.123456,nolog=True)
-pprint(read_lines=2)
-pprint(read_lines=-2)
-pprint('='*5,nolog=True)
-pprint(read_lines=True)
+print(1,2,3,log='0.txt')
+print(9,8,'l',{'k':0},(6,),range(9))
+# or
+showlog()
+showlog('all')
+showlog(2)
+showlog(-2)
 """
+import sys
 
-class pprint():
-    _fname =None
-    _f_handle = None
-    def __init__(self,content='',out=True,file_name=None,read_lines=0,end='\n',nolog=False):
-        if file_name!=None:
-            pprint._fname=file_name
-        if pprint._fname!=None:
-            import io
-            if not nolog:
-                if type(pprint._f_handle)!=io.TextIOWrapper or pprint._f_handle.closed:
-                    pprint._f_handle=open(pprint._fname,'a+')
-                pprint._f_handle.write( content if type(content)==str else repr(content))
-                pprint._f_handle.write(end)
-                pprint._f_handle.close()
-            if read_lines!=0:
-                pprint._f_handle=open(pprint._fname,'r')
-                lines = pprint._f_handle.readlines()
-                if int==type(read_lines):
-                    lines = lines[:read_lines]
-                pprint._f_handle.close()
-                for line in lines:
-                    print( line,end='')
-        if out:
-            print(content)
-        return None
+class setting:
+    _old_print_=print
+    _old_stdout_=sys.stdout
+    _log_file_name_=None
+    _log_file_hadl_=None
+    
+    def __init__():
+        pass
 
+def pprint(*args,nolog=False,**kwargs):
+    if 'log'in kwargs.keys() :
+        setting._log_file_name_=kwargs['log']
+        kwargs.pop('log')
+    setting._old_print_(*args,**kwargs)
+    if (not nolog) and setting._log_file_name_!=None and ('log' not in kwargs.keys() or kwargs['file']==sys.stdout):
+        new_kwargs = {k:v for k,v in kwargs.items()}
+        _log_file_hadl_ = open(setting._log_file_name_,'a+')
+        new_kwargs['file'] =  _log_file_hadl_
+        setting._old_print_(*args,**new_kwargs)
+
+def print(*args,**kwargs):
+    pprint(*args,**kwargs)
+
+def showlog(lines=0,log=None):
+    if log==None:
+        _log=setting._log_file_name_
+    else:
+        _log=log
+    if _log!=None :
+        setting._old_print_('log file name : '+_log)
+    if lines!=0:
+        with open(_log,'r') as h_log_file:
+            ls = h_log_file.readlines()
+            if type(lines)!=int :
+                pass
+            elif lines<0:
+                ls = ls[lines:]
+            elif lines>0:
+                ls = ls[:lines]
+            for l in ls:
+                setting._old_print_( l ,end='')
