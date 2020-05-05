@@ -6,6 +6,13 @@ import cv2
 import matplotlib.pyplot as plt 
 import matplotlib.image as mpimg 
 
+"""
+# src_file 源mp4文件
+# dst_path 目标路径
+# proc     处理用的函数，rgb入rgb出
+# sample   每过几帧取1帧（注意只有是整数时才有效）
+# bar      用于控制是否打印进度
+"""
 def video_process(src_file,dst_path='',proc=lambda x:x,sample=None,bar=True):
     src_video = cv2.VideoCapture(src_file)
     f_name=os.path.join(dst_path,src_file.split(os.sep)[-1].split('.')[0]+('.sample_%d'%sample if type(sample)==int else '')+'.avi')
